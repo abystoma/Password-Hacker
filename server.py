@@ -4,7 +4,7 @@ import socket
 import random
 import json
 
-abc = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+password = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
 
 logins_list = [
     'admin', 'Admin', 'admin1', 'admin2', 'admin3',
@@ -21,8 +21,7 @@ def logins():
 
 def random_password():
     '''function - generating random password of length from 6 to 10'''
-    return ''.join(random.choice(abc) for i in range(random.randint(6, 10)))
-
+    return ''.join(random.choice(password) for i in range(random.randint(6, 10)))
 
 def random_login():
     return random.choice(list(logins()))
