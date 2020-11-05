@@ -5,17 +5,18 @@ import socket
 import string
 
 log_pass = {
-    "login": "admin",
+    "login": " ",
     "password": " "
 }
 
 with open('logins.txt', 'r') as logins_file:
     logins = [x.strip('\n') for x in logins_file]
 
+
 def connecting_to_server():
     correct_login, correct_password = '', ''
     connection = socket.socket()
-    argv = sys.argv
+    #argv = sys.argv
     host, port = "localhost", 9090
     connection.connect((host, port))
     for i in brut_force_login(logins):
@@ -27,7 +28,8 @@ def connecting_to_server():
         if answer['result'] == 'Wrong password!':
             correct_login = log_pass['login']
             break
-    for k in range(1_000_000):
+
+    for _ in range(1_000_000):
         for i in brut_force_password():
             log_pass['password'] = correct_password + i
             connection.send(json.dumps(log_pass).encode())

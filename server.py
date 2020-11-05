@@ -3,28 +3,30 @@ from time import sleep
 import socket
 import random
 import json
+import itertools
 
 password = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
 
-logins_list = [
-    'admin', 'Admin', 'admin1', 'admin2', 'admin3',
-    'user1', 'user2', 'root', 'default', 'new_user',
-    'some_user', 'new_admin', 'administrator',
-    'Administrator', 'superuser', 'super', 'su', 'alex',
-    'suser', 'rootuser', 'adminadmin', 'useruser',
-    'superadmin', 'username', 'username1'
-]
+with open('logins.txt', 'r') as logins_file:
+    logins_list = [x.strip('\n') for x in logins_file]
+
 
 def logins():
     for login in logins_list:
-        yield login
+        all_logins = map(''.join, itertools.product(
+            *((c.upper(), c.lower()) for c in login)))
+        for x in all_logins:
+            yield x
+
 
 def random_password():
     '''function - generating random password of length from 6 to 10'''
     return ''.join(random.choice(password) for i in range(random.randint(6, 10)))
 
+
 def random_login():
     return random.choice(list(logins()))
+
 
 class Hacking():
 
@@ -57,9 +59,9 @@ class Hacking():
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind(('localhost', 9090))
         self.ready = True
-        print("Server listening on port 9090" )
-        print("Server username: ", self.login )
-        print("Server password: ", self.password )
+        print("Server listening on port 9090")
+        print("Server username: ", self.login)
+        print("Server password: ", self.password)
         try:
             self.sock.listen(1)
             conn, addr = self.sock.accept()
@@ -81,7 +83,8 @@ class Hacking():
                     login_ = json.loads(data.decode('utf8'))['login']
                     password_ = json.loads(data.decode('utf8'))['password']
                 except:
-                    conn.send(json.dumps({'result': 'Bad request!'}).encode('utf8'))
+                    conn.send(json.dumps(
+                        {'result': 'Bad request!'}).encode('utf8'))
                     continue
 
                 if login_ == self.login:
@@ -102,7 +105,8 @@ class Hacking():
                                 'result': 'Wrong password!'
                             }).encode('utf8'))
                 else:
-                    conn.send(json.dumps({'result': 'Wrong login!'}).encode('utf8'))
+                    conn.send(json.dumps(
+                        {'result': 'Wrong login!'}).encode('utf8'))
             conn.close()
         except:
             pass
@@ -112,6 +116,7 @@ class Hacking():
         self.password = random_password()
         self.login = random_login()
         self.start_server()
+
 
 test = Hacking()
 test.generate()
